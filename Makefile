@@ -1,4 +1,4 @@
-TARGET := iphone:clang:16.2:15.0
+TARGET := iphone:clang:18.6:15.0
 INSTALL_TARGET_PROCESSES = Instagram
 ARCHS = arm64
 
@@ -30,6 +30,14 @@ $(TWEAK_NAME)_CFLAGS += -DSPK_DEV=1
 endif
 
 $(TWEAK_NAME)_CXXFLAGS += -std=c++11
+
+# xybp888's iPhoneOS18.6 VisionKit.tbd only exports _TtC* ObjC stubs and
+# drops the Swift ABI symbols ($s9VisionKit*) that SPKLiveTextBridge.swift
+# needs. Xcode's iphoneos SDK still has a complete VisionKit; search it first.
+XCODE_IPHONEOS_SDK := $(shell xcrun --sdk iphoneos --show-sdk-path 2>/dev/null)
+ifneq ($(XCODE_IPHONEOS_SDK),)
+$(TWEAK_NAME)_LDFLAGS += -F$(XCODE_IPHONEOS_SDK)/System/Library/Frameworks
+endif
 
 # Attach Sparkle's resource bundle to the tweak package. Theos relocates this
 # path automatically for rootless packages. FFmpeg frameworks are added after
