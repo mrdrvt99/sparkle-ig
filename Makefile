@@ -1,4 +1,4 @@
-TARGET := iphone:clang:16.2:15.0
+TARGET := iphone:clang:18.6:15.0
 INSTALL_TARGET_PROCESSES = Instagram
 ARCHS = arm64
 
@@ -11,8 +11,10 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = Sparkle
 
-$(TWEAK_NAME)_FILES = $(shell find src -type f \( -iname \*.x -o -iname \*.xm -o -iname \*.m -o -iname \*.swift \)) modules/SPKSideloadFix/fishhook/fishhook.c
-$(TWEAK_NAME)_FRAMEWORKS = UIKit Foundation CoreGraphics CoreLocation MapKit Photos CoreServices SystemConfiguration SafariServices Security QuartzCore AVFoundation AVKit CoreData LocalAuthentication ImageIO UniformTypeIdentifiers Accelerate VisionKit UserNotifications
+# Exclude Live Text bridge so we don't link VisionKit (incomplete in 18.6 SDK)
+$(TWEAK_NAME)_FILES = $(shell find src -type f \( -iname \*.x -o -iname \*.xm -o -iname \*.m -o -iname \*.swift \) ! -name 'SPKLiveTextBridge.swift') modules/SPKSideloadFix/fishhook/fishhook.c
+
+$(TWEAK_NAME)_FRAMEWORKS = UIKit Foundation CoreGraphics CoreLocation MapKit Photos CoreServices SystemConfiguration SafariServices Security QuartzCore AVFoundation AVKit CoreData LocalAuthentication ImageIO UniformTypeIdentifiers Accelerate UserNotifications
 $(TWEAK_NAME)_PRIVATE_FRAMEWORKS = Preferences
 $(TWEAK_NAME)_LIBRARIES = sqlite3
 $(TWEAK_NAME)_CFLAGS = -fobjc-arc -Wno-unsupported-availability-guard -Wno-unused-value -Wno-deprecated-declarations -Wno-nullability-completeness -Wno-unused-function -Wno-incompatible-pointer-types
