@@ -170,13 +170,12 @@ jobs:
                 path: ${{ steps.package_name.outputs.path }}
                 if-no-files-found: error
 
-            - name: Release
+            - name: Create Release
               uses: softprops/action-gh-release@v3
               with:
-                tag_name: v${{ env.SPARKLE_VERSION }}
-                name: Sparkle v${{ env.SPARKLE_VERSION }}
-                files: |
-                  packages/Sparkle_*_IG_v*.ipa
+                tag_name: v${{ steps.sparkle_version.outputs.version }}
+                name: Sparkle v${{ steps.sparkle_version.outputs.version }}
+                files: ${{ github.workspace }}/main/packages/Sparkle_*_IG_v*.ipa
                 draft: false
                 overwrite_files: true
 
